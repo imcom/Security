@@ -35,6 +35,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class Analyzer {
+	// User Interface initialization
 	private JFrame main_frame = new JFrame("Substitution Analyzer");
 	private JMenuBar menu_bar = new JMenuBar();
 	private JMenuItem open_file = new JMenuItem("Open");
@@ -54,9 +55,6 @@ public class Analyzer {
 	private JTextArea english_single = new JTextArea("english stat here...");
 	private JTextArea english_digram = new JTextArea("english stat here...");
 	private JTextArea english_trigram = new JTextArea("english stat here...");
-	
-	private HashMap<String, String> subs_records = new HashMap<String, String>();
-	
 	private JTextField text_A = new JTextField(1);
 	private JTextField text_B = new JTextField(1);
 	private JTextField text_C = new JTextField(1);
@@ -110,17 +108,21 @@ public class Analyzer {
 	private JLabel label_X = new JLabel("X");
 	private JLabel label_Y = new JLabel("Y");
 	private JLabel label_Z = new JLabel("Z");
-	
+	// User Interface initialization end
 	
 	private File src_file;
 	private String target_string = "";
+	
+	// stores which letter is assigned to a corresponding letter in cipher
+	private HashMap<String, String> subs_records = new HashMap<String, String>();
+	// stores a typical English frequencies
 	private ArrayList<List<Map.Entry<String, Float>>> english_frequency_list = new ArrayList<List<Map.Entry<String, Float>>>(3);
+	// stores frequencies of the cipher text
 	private ArrayList<List<Map.Entry<String, Float>>> cipher_frequency_list = new ArrayList<List<Map.Entry<String, Float>>>(3);
 	
 	private class WatchDog implements Runnable {
-
+		// A thread that monitors the input in ciphertext field and copy the input to plaintext field for decrypting.
 		public WatchDog(){
-			
 		}
 		@Override
 		public void run() {
@@ -140,6 +142,7 @@ public class Analyzer {
 	}
 	
 	private void startAnalysis(String target) {
+		// Creates three threads to calculate the single/digram/trigram frequencies of the given text.
 		ExecutorService workers = Executors.newFixedThreadPool(3);
 		for (int i = 1; i <= 3; ++i) {
 			workers.submit(createCounter(i, target, cipher_frequency_list));
@@ -155,6 +158,7 @@ public class Analyzer {
 	}
 	
 	private void setFrequencies(JTextArea single, JTextArea digram, JTextArea trigram, ArrayList<List<Map.Entry<String, Float>>> frequency_list) {
+		// Builds up frequency results and displays them on corresponding fields.
 		for (int i = 0; i < frequency_list.size(); ++i) {
 			List<Map.Entry<String, Float>> list = frequency_list.get(i);
 			StringBuilder sb = new StringBuilder();
@@ -181,13 +185,15 @@ public class Analyzer {
 	
 	private Runnable createCounter(final int step, final String target, final ArrayList<List<Map.Entry<String, Float>>> frequency_list) {
 		return new Runnable() {
-
+			// Returns a runnable object which calculates the frequency of the given text
+			// @step specifies the calculation of single letter frequency or digram or trigram.
+			// @frequency_list stores the frequency result.
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
 				HashMap<String, Float> frequency_dict = new HashMap<String, Float>();
 				int length = target.length();
-				for (int index = 0; index + step <= length; ++index) {
+				for (int index = 0; index + step <= length; ++index) { // calculate the total number of each letter in the text
 					String key = target.substring(index, index + step);					
 					if (!frequency_dict.containsKey(key)) {
 						frequency_dict.put(key, 1F);
@@ -196,12 +202,12 @@ public class Analyzer {
 					}
 				}
 				
-				for (String key : frequency_dict.keySet()) {
+				for (String key : frequency_dict.keySet()) { // calculate the ratio of occurrence of each letter
 					frequency_dict.put(key, frequency_dict.get(key) * 1F / (length - step + 1));
 				}
 				
 				List<Map.Entry<String, Float>> sorted_list = new Vector<Map.Entry<String, Float>>(frequency_dict.entrySet());
-				java.util.Collections.sort(sorted_list, new Comparator<Map.Entry<String, Float>>() {
+				java.util.Collections.sort(sorted_list, new Comparator<Map.Entry<String, Float>>() { // Sort the frequency in a descending manner
 							@Override
 							public int compare(Entry<String, Float> arg0, Entry<String, Float> arg1) {
 								// TODO Auto-generated method stub
@@ -385,7 +391,7 @@ public class Analyzer {
 		});
 		
 		open_file.addActionListener(new ActionListener() {
-
+			// reads a typical English text from a file.
 			@Override
 			public void actionPerformed(ActionEvent action) {
 				// TODO Auto-generated method stub
@@ -410,11 +416,6 @@ public class Analyzer {
 						workers.shutdown();
 						workers.awaitTermination(10, TimeUnit.SECONDS);
 						
-//						for (List<Map.Entry<String, Float>> list : english_frequency_list) {
-//							for (Map.Entry<String, Float> entry : list) {
-//								System.out.println(entry.getKey() + ":" + entry.getValue());
-//							}
-//						}
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -452,6 +453,7 @@ public class Analyzer {
 	}
 
 	private class InputListener extends KeyAdapter {
+		// Updates the plaintext according to the assignment of letters from user
 		public void keyReleased(KeyEvent e) {	
 			String plaintext = plainArea.getText();
             JTextField sourceField = (JTextField) e.getSource();
