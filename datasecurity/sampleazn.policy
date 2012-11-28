@@ -1,0 +1,76 @@
+/** Java 2 Access Control Policy for the JAAS Sample Application **/
+
+grant codebase "file:./lib/bcprov-jdk15on-147.jar" {
+    permission java.security.SecurityPermission "putProviderProperty.BC";
+    permission java.util.PropertyPermission "org.bouncycastle.pkcs1.strict", "read";
+};
+
+grant codebase "file:/usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunpkcs11.jar" {
+    permission java.lang.RuntimePermission "accessClassInPackage.sun.security.util";
+};
+
+/* grant the sample LoginModule permissions */
+grant codebase "file:./SampleLM.jar" {
+    permission javax.security.auth.AuthPermission "modifyPrincipals";
+    permission java.io.FilePermission "/home/imcom/Lab/workspace/JAAS/jaaspasswd", "read";
+    permission java.io.FilePermission "/home/imcom/Lab/workspace/JAAS/imcom_keystore", "read";
+    permission java.io.FilePermission "/home/imcom/Lab/workspace/JAAS/passwd.sig", "read";
+    permission java.io.FilePermission "/home/imcom/Lab/workspace/JAAS/imcom.cer", "read";
+    permission java.security.SecurityPermission "insertProvider.BC";
+};
+
+grant codebase "file:./SampleAzn.jar" {
+    permission javax.security.auth.AuthPermission "createLoginContext.Sample";
+    permission javax.security.auth.AuthPermission "doAsPrivileged";
+};
+
+/** User-Based Access Control Policy for the SampleAction class
+ ** instantiated by SampleAzn 
+ **/
+ 
+ grant codebase "file:./SampleAction.jar", Principal sample.principal.SamplePrincipal "Employee" {
+    permission javax.security.auth.AuthPermission "getSubject";
+};
+
+grant codebase "file:./SampleAction.jar", Principal sample.principal.SamplePrincipal "Alice" {
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Print";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Queue";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.TopQueue";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Start";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Stop";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Restart";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.ReadConfig";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.SetConfig";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Status";
+};
+  
+grant codebase "file:./SampleAction.jar", Principal sample.principal.SamplePrincipal "Bob" {
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Print";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Queue";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Start";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Stop";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Restart";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.ReadConfig";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.SetConfig";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Status";
+};
+
+grant codebase "file:./SampleAction.jar", Principal sample.principal.SamplePrincipal "Cecilia" {
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Print";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Queue";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.TopQueue";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Restart";
+};
+
+grant codebase "file:./SampleAction.jar", Principal sample.principal.SamplePrincipal "David" {
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Print";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Queue";
+};
+
+grant codebase "file:./SampleAction.jar", Principal sample.principal.SamplePrincipal "Erica" {
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Print";
+    permission java.lang.RuntimePermission "accessClassInPackage.Services.Queue";
+};
+
+
+
